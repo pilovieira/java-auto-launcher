@@ -21,7 +21,7 @@ public class ChecksumUtil {
         try {
             byte[] fileBytes = Files.readAllBytes(Paths.get(file.toURI()));
             MessageDigest alg = MessageDigest.getInstance(ALGORITHM);
-            byte digestMessage[] = alg.digest(fileBytes);
+            byte[] digestMessage = alg.digest(fileBytes);
 
             StringBuilder checksum = new StringBuilder();
             for (byte b : digestMessage)

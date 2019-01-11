@@ -35,13 +35,13 @@ public class ChecksumGenerator {
         }
     }
 
-    private ChecksumGenerator(File root) {
+    ChecksumGenerator(File root) {
         if (!root.exists() || !root.isDirectory())
             throw new RuntimeException(msg("rootMustBeDirectory"));
         this.root = root;
     }
 
-    private String createChecksum() {
+    String createChecksum() {
         b = new StringBuilder();
         FileUtil.applyAll(root, this::buildChecksum);
         return b.toString();
