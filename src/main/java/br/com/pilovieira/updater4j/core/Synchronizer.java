@@ -1,20 +1,19 @@
 package br.com.pilovieira.updater4j.core;
 
 import br.com.pilovieira.updater4j.Options;
-import br.com.pilovieira.updater4j.checksum.ChecksumUtil;
-import br.com.pilovieira.updater4j.util.FileUtil;
+import br.com.pilovieira.updater4j.checksum.Checksum;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static br.com.pilovieira.updater4j.checksum.ChecksumUtil.CHECKSUM_FILE_NAME;
-import static br.com.pilovieira.updater4j.checksum.ChecksumUtil.CHECKSUM_SPLITTER;
-import static br.com.pilovieira.updater4j.util.FileUtil.BACKUP_EXT;
-import static br.com.pilovieira.updater4j.util.FileUtil.UPDATE_EXT;
+import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_FILE_NAME;
+import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_SPLITTER;
+import static br.com.pilovieira.updater4j.core.FileWorker.BACKUP_EXT;
+import static br.com.pilovieira.updater4j.core.FileWorker.UPDATE_EXT;
 import static br.com.pilovieira.updater4j.util.Lang.msg;
 
-class FileSync {
+class Synchronizer {
 
     private Options options;
     private final File root;
@@ -25,7 +24,7 @@ class FileSync {
     private List<File> toDelete;
     private List<File> toClean;
 
-    public FileSync(Options options, Callback callback) {
+    public Synchronizer(Options options, Callback callback) {
         this.options = options;
         this.root = new File(options.downloadPath);
         this.callback = callback;
@@ -59,7 +58,7 @@ class FileSync {
 
     private Map<String, String> loadRemoteChecksums() {
         String url = buildUrl(CHECKSUM_FILE_NAME);
-        String checksumFile = FileUtil.download(url);
+        String checksumFile = FileWorker.download(url);
         String[] allChecksums = checksumFile.trim().replace("\r", "").split("\n");
 
         Map<String, String> checksumMap = new HashMap<>();
@@ -72,9 +71,9 @@ class FileSync {
     }
 
     private void update(File root) {
-        FileUtil.applyAll(root, this::cleanUp);
+        FileWorker.scanAll(root, this::cleanUp);
 
-        FileUtil.applyAll(root, this::process);
+        FileWorker.scanAll(root, this::process);
 
         AtomicInteger totalForDownload = new AtomicInteger(onlyRemote.size());
 
@@ -91,7 +90,7 @@ class FileSync {
     private void cleanUp(File file) {
         String absolutePath = file.getAbsolutePath();
         if (absolutePath.contains(BACKUP_EXT) || absolutePath.contains(UPDATE_EXT))
-            FileUtil.delete(file, true);
+            FileWorker.delete(file, true);
     }
 
     private void process(File file) {
@@ -99,7 +98,7 @@ class FileSync {
 
         callback.setMessage(msg("verifiying") + " " + fileName);
 
-        String localChecksum = ChecksumUtil.buildChecksum(file);
+        String localChecksum = Checksum.buildChecksum(file);
         String remoteChecksum = allRemote.get(fileName);
 
         if (remoteChecksum == null) {
@@ -118,11 +117,11 @@ class FileSync {
     private void downloadAndValidate(File file, String fileName, String remoteChecksum) {
         String updatedPath = file.getAbsolutePath() + UPDATE_EXT;
 
-        FileUtil.download(buildUrl(fileName), updatedPath);
+        FileWorker.download(buildUrl(fileName), updatedPath);
         File updatedFile = new File(updatedPath);
         toClean.add(updatedFile);
 
-        String localChecksum = ChecksumUtil.buildChecksum(updatedFile);
+        String localChecksum = Checksum.buildChecksum(updatedFile);
         if (!remoteChecksum.equals(localChecksum))
             throw new RuntimeException(msg("downloadHasFailed"));
     }
@@ -137,14 +136,14 @@ class FileSync {
     }
 
     private void replaceUpdatedFiles() {
-        toDelete.forEach(f -> FileUtil.addExt(f, BACKUP_EXT));
-        toClean.forEach(f -> FileUtil.removeExt(f, UPDATE_EXT));
-        toDelete.forEach(f -> FileUtil.delete(new File(f.getAbsolutePath() + BACKUP_EXT), false));
+        toDelete.forEach(f -> FileWorker.addExtension(f, BACKUP_EXT));
+        toClean.forEach(f -> FileWorker.removeExtension(f, UPDATE_EXT));
+        toDelete.forEach(f -> FileWorker.delete(new File(f.getAbsolutePath() + BACKUP_EXT), false));
     }
 
     private void rollback() {
-        toDelete.forEach(f -> FileUtil.removeExt(f, BACKUP_EXT));
-        toClean.forEach(f -> FileUtil.delete(f, true));
+        toDelete.forEach(f -> FileWorker.removeExtension(f, BACKUP_EXT));
+        toClean.forEach(f -> FileWorker.delete(f, true));
     }
 
 

@@ -39,7 +39,7 @@ public class Updater implements Runnable {
     private void update() {
         if (options.canUpdateNow.get()) {
             callback.onStart();
-            new FileSync(options, new FileSync.Callback() {
+            new Synchronizer(options, new Synchronizer.Callback() {
                 @Override
                 public void setMessage(String message) {
                     callback.setStatus(message);

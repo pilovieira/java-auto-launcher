@@ -1,13 +1,13 @@
 package br.com.pilovieira.updater4j.checksum;
 
-import br.com.pilovieira.updater4j.util.FileUtil;
+import br.com.pilovieira.updater4j.core.FileWorker;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static br.com.pilovieira.updater4j.checksum.ChecksumUtil.CHECKSUM_FILE_NAME;
-import static br.com.pilovieira.updater4j.checksum.ChecksumUtil.CHECKSUM_SPLITTER;
+import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_FILE_NAME;
+import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_SPLITTER;
 import static br.com.pilovieira.updater4j.util.Lang.msg;
 
 public class ChecksumGenerator {
@@ -43,13 +43,13 @@ public class ChecksumGenerator {
 
     String createChecksum() {
         b = new StringBuilder();
-        FileUtil.applyAll(root, this::buildChecksum);
+        FileWorker.scanAll(root, this::buildChecksum);
         return b.toString();
     }
 
     private void buildChecksum(File file) {
         if (!CHECKSUM_FILE_NAME.equals(file.getName()))
-            b.append(String.format("%s %s %s\n", ChecksumUtil.buildChecksum(file), CHECKSUM_SPLITTER, buildName(file)));
+            b.append(String.format("%s %s %s\n", Checksum.buildChecksum(file), CHECKSUM_SPLITTER, buildName(file)));
     }
 
     private String buildName(File file) {

@@ -20,7 +20,13 @@ public enum Lang {
         this.locale = locale;
     }
 
+    private static ResourceBundle getBundle() {
+        if (lang == null)
+            initialize(English);
+        return lang;
+    }
+
     public static String msg(String key) {
-        return lang.getString(key);
+        return getBundle().getString(key);
     }
 }

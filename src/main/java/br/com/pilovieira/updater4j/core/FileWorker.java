@@ -1,4 +1,4 @@
-package br.com.pilovieira.updater4j.util;
+package br.com.pilovieira.updater4j.core;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 import static br.com.pilovieira.updater4j.util.Lang.msg;
 
-public class FileUtil {
+public class FileWorker {
 
     public static final String BACKUP_EXT = ".bkp";
     public static final String UPDATE_EXT = ".updated";
@@ -23,6 +23,7 @@ public class FileUtil {
             byte dataBuffer[] = new byte[1];
             while (in.read(dataBuffer, 0, 1) != -1)
                 b.append(new String(dataBuffer));
+            in.close();
             return b.toString();
         } catch (IOException ex) {
             throw new RuntimeException(msg("fileDownloadFailed"), ex);
@@ -34,9 +35,9 @@ public class FileUtil {
 
         try {
             ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(url).openStream());
-            FileOutputStream fileOutputStream = new FileOutputStream(destiny);
-            fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
-            fileOutputStream.close();
+            FileOutputStream os = new FileOutputStream(destiny);
+            os.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+            os.close();
         } catch (IOException ex) {
             throw new RuntimeException(msg("fileDownloadFailed"), ex);
         }
@@ -48,28 +49,28 @@ public class FileUtil {
             throw new RuntimeException(msg("failedOnDelete") + " " + file.getAbsolutePath());
     }
 
-    public static void addExt(File file, String ext) {
+    public static void addExtension(File file, String ext) {
         String newPath = file.getAbsolutePath() + ext;
         boolean ok = file.renameTo(new File(newPath));
         if (!ok)
             throw new RuntimeException(msg("failedOnRename") + " " + file.getAbsolutePath());
     }
 
-    public static void removeExt(File file, String ext) {
+    public static void removeExtension(File file, String ext) {
         String newPath = file.getAbsolutePath().replace(ext, "");
         boolean ok = file.renameTo(new File(newPath));
         if (!ok)
             throw new RuntimeException(msg("failedOnRename") + " " + file.getAbsolutePath());
     }
 
-    public static void applyAll(File file, Consumer<File> consumer) {
+    public static void scanAll(File file, Consumer<File> consumer) {
         if (!file.isDirectory())
             consumer.accept(file);
         else {
             File[] files = file.listFiles();
             if (files != null)
                 for (File child : files)
-                    applyAll(child, consumer);
+                    scanAll(child, consumer);
         }
     }
 

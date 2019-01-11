@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 
 import static br.com.pilovieira.updater4j.util.Lang.msg;
 
-public class ChecksumUtil {
+public class Checksum {
 
     public static final String CHECKSUM_FILE_NAME = "loader-checksum.txt";
     public static final String CHECKSUM_SPLITTER = "-->";
