@@ -121,9 +121,8 @@ public class Updater4jFrame extends JFrame {
         @Override
         public void onFail(Exception ex) {
             SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(null, ex.getMessage(), msg("failed"), JOptionPane.ERROR_MESSAGE);
-
                 textInfo.setText(msg("updateFailed"));
+                textProcess.setText(ex.getMessage());
                 btnCancel.setText(msg("close"));
             });
         }

@@ -1,6 +1,5 @@
 package br.com.pilovieira.updater4j.checksum;
 
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,7 +22,12 @@ public class ChecksumUtil {
             byte[] fileBytes = Files.readAllBytes(Paths.get(file.toURI()));
             MessageDigest alg = MessageDigest.getInstance(ALGORITHM);
             byte digestMessage[] = alg.digest(fileBytes);
-            return new HexBinaryAdapter().marshal(digestMessage);
+
+            StringBuilder checksum = new StringBuilder();
+            for (byte b : digestMessage)
+                checksum.append(String.format("%02x", b & 0xff));
+
+            return checksum.toString().toUpperCase();
         } catch (IOException | NoSuchAlgorithmException e) {
             throw new RuntimeException(msg("buildChecksumFailed") + " " + file.getName());
         }
