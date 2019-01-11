@@ -7,14 +7,13 @@ import java.util.function.Supplier;
 
 public class Options {
 
-    public String remoteRepositoryUrl;
-    public String downloadPath;
-    public String[] launchCommand;
+    public final String remoteRepositoryUrl;
+    public final String downloadPath;
+    public final String[] launchCommand;
 
     public Lang lang = Lang.English;
     public String launcherTitle = "";
     public String updateMessage = "";
-    public InputStream launcherScreenIcon = getClass().getResourceAsStream("/image/download.png");
     public InputStream launcherLogo = getClass().getResourceAsStream("/image/download.png");
     public Supplier<Boolean> canUpdateNow = () -> true;
     public Supplier<Boolean> launchWhenCannotUpdate = () -> false;
