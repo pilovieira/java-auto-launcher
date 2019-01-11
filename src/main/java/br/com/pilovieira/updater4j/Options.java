@@ -5,7 +5,7 @@ import br.com.pilovieira.updater4j.util.Lang;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
-public class AutoLauncherOptions {
+public class Options {
 
     public String remoteRepositoryUrl;
     public String downloadPath;
@@ -20,7 +20,7 @@ public class AutoLauncherOptions {
     public Supplier<Boolean> launchWhenCannotUpdate = () -> false;
     public Supplier<Boolean> launchWhenFail = () -> false;
 
-    public AutoLauncherOptions(String remoteRepositoryUrl, String downloadPath, String... launchCommand) {
+    public Options(String remoteRepositoryUrl, String downloadPath, String... launchCommand) {
         this.remoteRepositoryUrl = remoteRepositoryUrl;
         this.downloadPath = downloadPath;
         this.launchCommand = launchCommand;
@@ -29,13 +29,13 @@ public class AutoLauncherOptions {
 
     private void validate() {
         if (noe(remoteRepositoryUrl))
-            throw new RuntimeException("Please configure 'remoteRepository' AutoLauncher option.");
+            throw new RuntimeException("Please configure 'remoteRepository' Updater4j option.");
 
         if (noe(downloadPath))
-            throw new RuntimeException("Please configure 'downloadPath' AutoLauncher option.");
+            throw new RuntimeException("Please configure 'downloadPath' Updater4j option.");
 
         if (launchCommand.length == 0)
-            throw new RuntimeException("Please configure 'launchCommand' AutoLauncher option.");
+            throw new RuntimeException("Please configure 'launchCommand' Updater4j option.");
     }
 
     private static boolean noe(String value) {

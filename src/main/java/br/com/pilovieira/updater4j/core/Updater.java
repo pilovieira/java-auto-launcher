@@ -1,16 +1,16 @@
 package br.com.pilovieira.updater4j.core;
 
-import br.com.pilovieira.updater4j.AutoLauncherOptions;
+import br.com.pilovieira.updater4j.Options;
 
 import static br.com.pilovieira.updater4j.util.Lang.msg;
 
-public class Processor implements Runnable {
+public class Updater implements Runnable {
 
-    private AutoLauncherOptions options;
+    private Options options;
     private Callback callback;
     private boolean aborted;
 
-    public Processor(AutoLauncherOptions options, Callback callback) {
+    public Updater(Options options, Callback callback) {
         this.options = options;
         this.callback = callback;
     }
@@ -39,7 +39,17 @@ public class Processor implements Runnable {
     private void update() {
         if (options.canUpdateNow.get()) {
             callback.onStart();
-            new FileUpdater(options, callback.updaterCallback()).load();
+            new FileSync(options, new FileSync.Callback() {
+                @Override
+                public void setMessage(String message) {
+                    callback.setStatus(message);
+                }
+
+                @Override
+                public void setProgress(long done, long max) {
+                    callback.setProgress(done, max);
+                }
+            }).load();
         } else if (!options.launchWhenCannotUpdate.get())
             throw new RuntimeException(msg("updateCannotBeExecutedNow"));
     }
@@ -50,7 +60,8 @@ public class Processor implements Runnable {
         void onFinish();
         void onPostRun();
         void onFail(Exception ex);
-        FileUpdater.Callback updaterCallback();
+        void setStatus(String status);
+        void setProgress(long done, long max);
     }
 
 }

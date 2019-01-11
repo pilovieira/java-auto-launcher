@@ -1,5 +1,7 @@
 package br.com.pilovieira.updater4j.checksum;
 
+import br.com.pilovieira.updater4j.util.FileUtil;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -41,29 +43,18 @@ public class ChecksumGenerator {
 
     private String createChecksum() {
         b = new StringBuilder();
-        deep(root);
+        FileUtil.applyAll(root, this::buildChecksum);
         return b.toString();
     }
 
-    private void deep(File file) {
-        if (!file.isDirectory())
-            buildChecksum(file);
-        else {
-            File[] files = file.listFiles();
-            if (files != null)
-                for (File child : files)
-                    deep(child);
-        }
-    }
-
     private void buildChecksum(File file) {
-        if (CHECKSUM_FILE_NAME.equals(file.getName()))
-            return;
-        b.append(String.format("%s %s %s\n", buildName(file), CHECKSUM_SPLITTER, ChecksumUtil.buildChecksum(file)));
+        if (!CHECKSUM_FILE_NAME.equals(file.getName()))
+            b.append(String.format("%s %s %s\n", buildName(file), CHECKSUM_SPLITTER, ChecksumUtil.buildChecksum(file)));
     }
 
     private String buildName(File file) {
-        return file.getAbsolutePath().replace(root.getAbsolutePath(), "")
+        return file.getAbsolutePath()
+                .replace(root.getAbsolutePath(), "")
                 .replace("\\", "/");
     }
 

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.function.Consumer;
 
 import static br.com.pilovieira.updater4j.util.Lang.msg;
 
@@ -59,6 +60,17 @@ public class FileUtil {
         boolean ok = file.renameTo(new File(newPath));
         if (!ok)
             throw new RuntimeException(msg("failedOnRename") + " " + file.getAbsolutePath());
+    }
+
+    public static void applyAll(File file, Consumer<File> consumer) {
+        if (!file.isDirectory())
+            consumer.accept(file);
+        else {
+            File[] files = file.listFiles();
+            if (files != null)
+                for (File child : files)
+                    applyAll(child, consumer);
+        }
     }
 
 }

@@ -1,8 +1,7 @@
 package br.com.pilovieira.updater4j.view;
 
-import br.com.pilovieira.updater4j.AutoLauncherOptions;
-import br.com.pilovieira.updater4j.core.FileUpdater;
-import br.com.pilovieira.updater4j.core.Processor;
+import br.com.pilovieira.updater4j.Options;
+import br.com.pilovieira.updater4j.core.Updater;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -24,12 +23,12 @@ public class AutoLauncherController {
     public Label textProcess;
     public Button btnCancel;
 
-    private AutoLauncherOptions options;
+    private Options options;
     private LoadTask loadTask;
     private Thread animThread;
     private Thread loadThread;
 
-    public void initialize(AutoLauncherOptions options) {
+    public void initialize(Options options) {
         this.options = options;
         imageLogo.setImage(new Image(this.options.launcherLogo));
     }
@@ -56,7 +55,7 @@ public class AutoLauncherController {
     }
 
     public void cancelAction() {
-        loadTask.processor.abort();
+        loadTask.updater.abort();
         animThread.interrupt();
         loadThread.interrupt();
         close();
@@ -78,17 +77,17 @@ public class AutoLauncherController {
 
     private class LoadTask extends Task<Void> {
 
-        private Processor processor;
+        private Updater updater;
 
         @Override
         protected Void call() {
-            createProcessor();
-            processor.run();
+            createUpdater();
+            updater.run();
             return null;
         }
 
-        private void createProcessor() {
-            this.processor = new Processor(options, new Processor.Callback() {
+        private void createUpdater() {
+            this.updater = new Updater(options, new Updater.Callback() {
                 @Override
                 public void onStart() {
                     animThread.start();
@@ -115,18 +114,13 @@ public class AutoLauncherController {
                 }
 
                 @Override
-                public FileUpdater.Callback updaterCallback() {
-                    return new FileUpdater.Callback() {
-                        @Override
-                        public void setMessage(String message) {
-                            updateMessage(message);
-                        }
+                public void setStatus(String status) {
+                    updateMessage(status);
+                }
 
-                        @Override
-                        public void setProgress(long done, long max) {
-                            updateProgress(done, max);
-                        }
-                    };
+                @Override
+                public void setProgress(long done, long max) {
+                    updateProgress(done, max);
                 }
             });
         }

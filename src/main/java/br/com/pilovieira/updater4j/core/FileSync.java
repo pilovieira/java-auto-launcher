@@ -1,13 +1,12 @@
 package br.com.pilovieira.updater4j.core;
 
-import br.com.pilovieira.updater4j.AutoLauncherOptions;
+import br.com.pilovieira.updater4j.Options;
 import br.com.pilovieira.updater4j.checksum.ChecksumUtil;
 import br.com.pilovieira.updater4j.util.FileUtil;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 import static br.com.pilovieira.updater4j.checksum.ChecksumUtil.CHECKSUM_FILE_NAME;
 import static br.com.pilovieira.updater4j.checksum.ChecksumUtil.CHECKSUM_SPLITTER;
@@ -15,9 +14,9 @@ import static br.com.pilovieira.updater4j.util.FileUtil.BACKUP_EXT;
 import static br.com.pilovieira.updater4j.util.FileUtil.UPDATE_EXT;
 import static br.com.pilovieira.updater4j.util.Lang.msg;
 
-public class FileUpdater {
+class FileSync {
 
-    private AutoLauncherOptions options;
+    private Options options;
     private final File root;
     private Callback callback;
     private final String remoteRepo;
@@ -26,7 +25,7 @@ public class FileUpdater {
     private List<File> toDelete;
     private List<File> toClean;
 
-    public FileUpdater(AutoLauncherOptions options, Callback callback) {
+    public FileSync(Options options, Callback callback) {
         this.options = options;
         this.root = new File(options.downloadPath);
         this.callback = callback;
@@ -73,9 +72,9 @@ public class FileUpdater {
     }
 
     private void update(File root) {
-        updateFileTree(root, this::cleanUp);
+        FileUtil.applyAll(root, this::cleanUp);
 
-        updateFileTree(root, this::process);
+        FileUtil.applyAll(root, this::process);
 
         AtomicInteger totalForDownload = new AtomicInteger(onlyRemote.size());
 
@@ -87,17 +86,6 @@ public class FileUpdater {
         });
 
         replaceUpdatedFiles();
-    }
-
-    private void updateFileTree(File file, Consumer<File> consumer) {
-        if (!file.isDirectory())
-            consumer.accept(file);
-        else {
-            File[] files = file.listFiles();
-            if (files != null)
-                for (File child : files)
-                    updateFileTree(child, consumer);
-        }
     }
 
     private void cleanUp(File file) {

@@ -11,12 +11,12 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class AutoLauncher {
+public class Updater4j {
 
-    public static void start(AutoLauncherOptions options) throws IOException {
+    public static void start(Options options) throws IOException {
         Lang.initialize(options.lang);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(AutoLauncher.class.getResource("/fxml/auto-launcher.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Updater4j.class.getResource("/fxml/auto-launcher.fxml"));
         Parent root = fxmlLoader.load();
         AutoLauncherController controller = fxmlLoader.getController();
         controller.initialize(options);
