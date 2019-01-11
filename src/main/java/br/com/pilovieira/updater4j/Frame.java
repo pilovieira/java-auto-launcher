@@ -1,6 +1,6 @@
 package br.com.pilovieira.updater4j;
 
-import br.com.pilovieira.updater4j.core.Updater;
+import br.com.pilovieira.updater4j.core.Processor;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -21,7 +21,7 @@ public class Frame extends JFrame {
     private final JButton btnCancel;
     private final Thread updaterThread;
 
-    private final Updater updater;
+    private final Processor processor;
     private final Thread animThread;
 
     public Frame(Options options) {
@@ -87,22 +87,22 @@ public class Frame extends JFrame {
         Anim anim = new Anim(options);
         animThread = new Thread(anim, "Updater4j Anim");
 
-        updater = new Updater(options, new UpdaterCallbackImpl());
-        updaterThread = new Thread(updater, "Updater4j Updater");
+        processor = new Processor(options, new UpdaterCallbackImpl());
+        updaterThread = new Thread(processor, "Updater4j Updater");
         updaterThread.start();
 
         setVisible(true);
     }
 
     private void cancelAction() {
-        updater.abort();
+        processor.abort();
         animThread.interrupt();
         updaterThread.interrupt();
         dispose();
     }
 
 
-    public class UpdaterCallbackImpl implements Updater.Callback {
+    public class UpdaterCallbackImpl implements Processor.Callback {
         @Override
         public void onStart() {
             animThread.start();
@@ -114,7 +114,7 @@ public class Frame extends JFrame {
         }
 
         @Override
-        public void onPostRun() {
+        public void onPostLaunch() {
             SwingUtilities.invokeLater(Frame.this::dispose);
         }
 

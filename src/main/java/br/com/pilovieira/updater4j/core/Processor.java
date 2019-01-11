@@ -4,15 +4,35 @@ import br.com.pilovieira.updater4j.Options;
 
 import static br.com.pilovieira.updater4j.Lang.msg;
 
-public class Updater implements Runnable {
+public class Processor implements Runnable {
 
     private Options options;
     private Callback callback;
+    private Synchronizer synchronizer;
+    private Launcher launcher;
     private boolean aborted;
 
-    public Updater(Options options, Callback callback) {
+    public Processor(Options options, Callback callback) {
+        this(options, callback,
+                new Synchronizer(options, new Synchronizer.Callback() {
+                    @Override
+                    public void setMessage(String message) {
+                        callback.setStatus(message);
+                    }
+
+                    @Override
+                    public void setProgress(long done, long max) {
+                        callback.setProgress(done, max);
+                    }
+                }),
+                new Launcher());
+    }
+
+    Processor(Options options, Callback callback, Synchronizer synchronizer, Launcher launcher) {
         this.options = options;
         this.callback = callback;
+        this.synchronizer = synchronizer;
+        this.launcher = launcher;
     }
 
     public void abort() {
@@ -23,8 +43,8 @@ public class Updater implements Runnable {
     public void run() {
         try {
             update();
-            Runtime.getRuntime().exec(options.launchCommand);
-            callback.onPostRun();
+            launcher.launch(options.launchCommand);
+            callback.onPostLaunch();
         } catch (Exception ex) {
             if (aborted)
                 return;
@@ -39,17 +59,7 @@ public class Updater implements Runnable {
     private void update() {
         if (options.updateConfirmation.get()) {
             callback.onStart();
-            new Synchronizer(options, new Synchronizer.Callback() {
-                @Override
-                public void setMessage(String message) {
-                    callback.setStatus(message);
-                }
-
-                @Override
-                public void setProgress(long done, long max) {
-                    callback.setProgress(done, max);
-                }
-            }).load();
+            synchronizer.load();
         } else if (!options.launchWhenCannotUpdate.get())
             throw new RuntimeException(msg("updateCannotBeExecutedNow"));
     }
@@ -58,7 +68,7 @@ public class Updater implements Runnable {
     public interface Callback {
         void onStart();
         void onFinish();
-        void onPostRun();
+        void onPostLaunch();
         void onFail(Exception ex);
         void setStatus(String status);
         void setProgress(long done, long max);
