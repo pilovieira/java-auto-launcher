@@ -65,7 +65,7 @@ class FileSync {
         Map<String, String> checksumMap = new HashMap<>();
         Arrays.stream(allChecksums).forEach(raw -> {
             String[] split = raw.split(CHECKSUM_SPLITTER);
-            checksumMap.put(split[0].trim(), split[1].trim());
+            checksumMap.put(split[1].trim(), split[0].trim());
         });
 
         return checksumMap;

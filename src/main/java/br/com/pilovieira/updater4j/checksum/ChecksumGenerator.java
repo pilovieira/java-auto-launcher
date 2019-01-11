@@ -49,7 +49,7 @@ public class ChecksumGenerator {
 
     private void buildChecksum(File file) {
         if (!CHECKSUM_FILE_NAME.equals(file.getName()))
-            b.append(String.format("%s %s %s\n", buildName(file), CHECKSUM_SPLITTER, ChecksumUtil.buildChecksum(file)));
+            b.append(String.format("%s %s %s\n", ChecksumUtil.buildChecksum(file), CHECKSUM_SPLITTER, buildName(file)));
     }
 
     private String buildName(File file) {
