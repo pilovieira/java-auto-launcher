@@ -7,16 +7,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.function.Consumer;
 
 import static br.com.pilovieira.updater4j.Lang.msg;
 
-public class FileWorker {
+class FileWorker {
 
     public static final String BACKUP_EXT = ".bkp";
     public static final String UPDATE_EXT = ".updated";
 
-    public static String download(String url) {
+    public String download(String url) {
         try {
             BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
             StringBuilder b = new StringBuilder();
@@ -30,7 +29,7 @@ public class FileWorker {
         }
     }
 
-    public static void download(String url, String destiny) {
+    public void download(String url, String destiny) {
         new File(destiny).getParentFile().mkdirs();
 
         try {
@@ -43,35 +42,24 @@ public class FileWorker {
         }
     }
 
-    public static void delete(File file, boolean cry) {
+    public void delete(File file, boolean cry) {
         boolean ok = file.delete();
         if (cry && !ok)
             throw new RuntimeException(msg("failedOnDelete") + " " + file.getAbsolutePath());
     }
 
-    public static void addExtension(File file, String ext) {
+    public void addExtension(File file, String ext) {
         String newPath = file.getAbsolutePath() + ext;
         boolean ok = file.renameTo(new File(newPath));
         if (!ok)
             throw new RuntimeException(msg("failedOnRename") + " " + file.getAbsolutePath());
     }
 
-    public static void removeExtension(File file, String ext) {
+    public void removeExtension(File file, String ext) {
         String newPath = file.getAbsolutePath().replace(ext, "");
         boolean ok = file.renameTo(new File(newPath));
         if (!ok)
             throw new RuntimeException(msg("failedOnRename") + " " + file.getAbsolutePath());
-    }
-
-    public static void scanAll(File file, Consumer<File> consumer) {
-        if (!file.isDirectory())
-            consumer.accept(file);
-        else {
-            File[] files = file.listFiles();
-            if (files != null)
-                for (File child : files)
-                    scanAll(child, consumer);
-        }
     }
 
 }

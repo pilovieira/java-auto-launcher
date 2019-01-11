@@ -1,14 +1,14 @@
 package br.com.pilovieira.updater4j.checksum;
 
-import br.com.pilovieira.updater4j.core.FileWorker;
+import br.com.pilovieira.updater4j.Util;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static br.com.pilovieira.updater4j.Lang.msg;
 import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_FILE_NAME;
 import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_SPLITTER;
-import static br.com.pilovieira.updater4j.Lang.msg;
 
 public class ChecksumFileGenerator {
 
@@ -43,7 +43,7 @@ public class ChecksumFileGenerator {
 
     String createChecksum() {
         b = new StringBuilder();
-        FileWorker.scanAll(root, this::buildChecksum);
+        Util.scanAll(root, this::buildChecksum);
         return b.toString();
     }
 

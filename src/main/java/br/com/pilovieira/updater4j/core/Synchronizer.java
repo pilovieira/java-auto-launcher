@@ -1,20 +1,22 @@
 package br.com.pilovieira.updater4j.core;
 
 import br.com.pilovieira.updater4j.Options;
+import br.com.pilovieira.updater4j.Util;
 import br.com.pilovieira.updater4j.checksum.Checksum;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static br.com.pilovieira.updater4j.Lang.msg;
 import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_FILE_NAME;
 import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_SPLITTER;
 import static br.com.pilovieira.updater4j.core.FileWorker.BACKUP_EXT;
 import static br.com.pilovieira.updater4j.core.FileWorker.UPDATE_EXT;
-import static br.com.pilovieira.updater4j.Lang.msg;
 
 class Synchronizer {
 
+    private FileWorker worker;
     private Options options;
     private final File root;
     private Callback callback;
@@ -25,6 +27,7 @@ class Synchronizer {
     private List<File> toClean;
 
     public Synchronizer(Options options, Callback callback) {
+        this.worker = new FileWorker();
         this.options = options;
         this.root = new File(options.downloadPath);
         this.callback = callback;
@@ -58,7 +61,7 @@ class Synchronizer {
 
     private Map<String, String> loadRemoteChecksums() {
         String url = buildUrl(CHECKSUM_FILE_NAME);
-        String checksumFile = FileWorker.download(url);
+        String checksumFile = worker.download(url);
         String[] allChecksums = checksumFile.trim().replace("\r", "").split("\n");
 
         Map<String, String> checksumMap = new HashMap<>();
@@ -71,9 +74,9 @@ class Synchronizer {
     }
 
     private void update(File root) {
-        FileWorker.scanAll(root, this::cleanUp);
+        Util.scanAll(root, this::cleanUp);
 
-        FileWorker.scanAll(root, this::process);
+        Util.scanAll(root, this::process);
 
         AtomicInteger totalForDownload = new AtomicInteger(onlyRemote.size());
 
@@ -90,7 +93,7 @@ class Synchronizer {
     private void cleanUp(File file) {
         String absolutePath = file.getAbsolutePath();
         if (absolutePath.contains(BACKUP_EXT) || absolutePath.contains(UPDATE_EXT))
-            FileWorker.delete(file, true);
+            worker.delete(file, true);
     }
 
     private void process(File file) {
@@ -117,7 +120,7 @@ class Synchronizer {
     private void downloadAndValidate(File file, String fileName, String remoteChecksum) {
         String updatedPath = file.getAbsolutePath() + UPDATE_EXT;
 
-        FileWorker.download(buildUrl(fileName), updatedPath);
+        worker.download(buildUrl(fileName), updatedPath);
         File updatedFile = new File(updatedPath);
         toClean.add(updatedFile);
 
@@ -136,14 +139,14 @@ class Synchronizer {
     }
 
     private void replaceUpdatedFiles() {
-        toDelete.forEach(f -> FileWorker.addExtension(f, BACKUP_EXT));
-        toClean.forEach(f -> FileWorker.removeExtension(f, UPDATE_EXT));
-        toDelete.forEach(f -> FileWorker.delete(new File(f.getAbsolutePath() + BACKUP_EXT), false));
+        toDelete.forEach(f -> worker.addExtension(f, BACKUP_EXT));
+        toClean.forEach(f -> worker.removeExtension(f, UPDATE_EXT));
+        toDelete.forEach(f -> worker.delete(new File(f.getAbsolutePath() + BACKUP_EXT), false));
     }
 
     private void rollback() {
-        toDelete.forEach(f -> FileWorker.removeExtension(f, BACKUP_EXT));
-        toClean.forEach(f -> FileWorker.delete(f, true));
+        toDelete.forEach(f -> worker.removeExtension(f, BACKUP_EXT));
+        toClean.forEach(f -> worker.delete(f, true));
     }
 
 
