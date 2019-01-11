@@ -8,9 +8,9 @@ import java.io.IOException;
 
 import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_FILE_NAME;
 import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_SPLITTER;
-import static br.com.pilovieira.updater4j.util.Lang.msg;
+import static br.com.pilovieira.updater4j.Lang.msg;
 
-public class ChecksumGenerator {
+public class ChecksumFileGenerator {
 
     private File root;
     private StringBuilder b;
@@ -20,7 +20,7 @@ public class ChecksumGenerator {
             throw new RuntimeException(msg("insertRootPath"));
 
         File root = new File(args[0]);
-        ChecksumGenerator generator = new ChecksumGenerator(root);
+        ChecksumFileGenerator generator = new ChecksumFileGenerator(root);
         String checksum = generator.createChecksum();
 
         System.out.println(checksum);
@@ -35,7 +35,7 @@ public class ChecksumGenerator {
         }
     }
 
-    ChecksumGenerator(File root) {
+    ChecksumFileGenerator(File root) {
         if (!root.exists() || !root.isDirectory())
             throw new RuntimeException(msg("rootMustBeDirectory"));
         this.root = root;

@@ -9,7 +9,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.function.Consumer;
 
-import static br.com.pilovieira.updater4j.util.Lang.msg;
+import static br.com.pilovieira.updater4j.Lang.msg;
 
 public class FileWorker {
 

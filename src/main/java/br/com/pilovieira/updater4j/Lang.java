@@ -1,4 +1,4 @@
-package br.com.pilovieira.updater4j.util;
+package br.com.pilovieira.updater4j;
 
 import java.util.Locale;
 import java.util.ResourceBundle;

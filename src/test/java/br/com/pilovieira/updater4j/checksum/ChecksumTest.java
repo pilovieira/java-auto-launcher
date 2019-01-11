@@ -1,6 +1,6 @@
 package br.com.pilovieira.updater4j.checksum;
 
-import br.com.pilovieira.updater4j.util.Lang;
+import br.com.pilovieira.updater4j.Lang;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,6 +1,6 @@
 package br.com.pilovieira.updater4j.checksum;
 
-import br.com.pilovieira.updater4j.util.Lang;
+import br.com.pilovieira.updater4j.Lang;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,7 +18,7 @@ import java.net.URL;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ChecksumGeneratorTest {
+public class ChecksumFileGeneratorTest {
 
     private static final String SIMPLE_TEXT_CHECKSUM = "2D0B72DCF5E5D3B04DF6DB7E542A03B2BEF06D7EBFD1F99CFDF5B6FAE6E61EBA2BE6235489242D16541CDC2C898CF33A5C5052FB1BE18AFA49207CDB3D0316C2 --> /simplefile.txt\n";
 
@@ -27,7 +27,7 @@ public class ChecksumGeneratorTest {
     @Mock private File root;
     @Mock private File file;
 
-    private ChecksumGenerator subject;
+    private ChecksumFileGenerator subject;
 
     @Before
     public void setup() {
@@ -37,7 +37,7 @@ public class ChecksumGeneratorTest {
         when(root.isDirectory()).thenReturn(true);
         when(root.getAbsolutePath()).thenReturn("/home/pilovieira/checksum");
 
-        subject = new ChecksumGenerator(root);
+        subject = new ChecksumFileGenerator(root);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class ChecksumGeneratorTest {
         thrown.expect(RuntimeException.class);
         thrown.expectMessage("Root must be a directory!");
 
-        new ChecksumGenerator(root);
+        new ChecksumFileGenerator(root);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ChecksumGeneratorTest {
         thrown.expect(RuntimeException.class);
         thrown.expectMessage("Root must be a directory!");
 
-        new ChecksumGenerator(root);
+        new ChecksumFileGenerator(root);
     }
 
     @Test

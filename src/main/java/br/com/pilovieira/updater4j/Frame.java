@@ -1,17 +1,17 @@
-package br.com.pilovieira.updater4j.view;
+package br.com.pilovieira.updater4j;
 
-import br.com.pilovieira.updater4j.Options;
 import br.com.pilovieira.updater4j.core.Updater;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import static br.com.pilovieira.updater4j.util.Lang.msg;
+import static br.com.pilovieira.updater4j.Lang.msg;
 
-public class Updater4jFrame extends JFrame {
+public class Frame extends JFrame {
 
     private static final long serialVersionUID = 7155605208697318521L;
 
@@ -24,9 +24,7 @@ public class Updater4jFrame extends JFrame {
     private final Updater updater;
     private final Thread animThread;
 
-    public Updater4jFrame(Options options) {
-        setTitle(options.launcherTitle);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    public Frame(Options options) {
         setBounds(100, 100, 600, 250);
         setUndecorated(true);
         setResizable(false);
@@ -46,7 +44,9 @@ public class Updater4jFrame extends JFrame {
         upPane.add(Box.createGlue());
 
         try {
-            ImageIcon icon = new ImageIcon(ImageIO.read(options.launcherLogo));
+            BufferedImage buff = ImageIO.read(options.logo == null ?
+                    getClass().getResourceAsStream("/image/transparent.png") : options.logo);
+            ImageIcon icon = new ImageIcon(buff);
             Image image = icon.getImage().getScaledInstance(128, 128, Image.SCALE_SMOOTH);
             JLabel picLabel = new JLabel(new ImageIcon(image));
             upPane.add(picLabel);
@@ -115,7 +115,7 @@ public class Updater4jFrame extends JFrame {
 
         @Override
         public void onPostRun() {
-            SwingUtilities.invokeLater(() -> dispose());
+            SwingUtilities.invokeLater(Frame.this::dispose);
         }
 
         @Override
@@ -153,7 +153,7 @@ public class Updater4jFrame extends JFrame {
         @Override
         public void run() {
             try {
-                String msg = options.updateMessage.isEmpty() ? msg("updating") : options.updateMessage;
+                String msg = options.message == null ? msg("updating") : options.message;
                 for (;;) {
                     SwingUtilities.invokeLater(() -> textInfo.setText(msg + "."));
                     Thread.sleep(500);

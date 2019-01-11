@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import static br.com.pilovieira.updater4j.util.Lang.msg;
+import static br.com.pilovieira.updater4j.Lang.msg;
 
 public class Checksum {
 

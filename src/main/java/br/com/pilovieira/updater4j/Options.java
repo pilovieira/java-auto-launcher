@@ -1,45 +1,52 @@
 package br.com.pilovieira.updater4j;
 
-import br.com.pilovieira.updater4j.util.Lang;
-
 import java.io.InputStream;
 import java.util.function.Supplier;
 
 public class Options {
 
-    public final String remoteRepositoryUrl;
-    public final String downloadPath;
-    public final String[] launchCommand;
+    public String remoteRepositoryUrl;
+    public String downloadPath;
+    public String[] launchCommand;
+    public Lang lang;
+    public String message;
+    public InputStream logo;
+    public Supplier<Boolean> updateConfirmation;
+    public Supplier<Boolean> launchWhenCannotUpdate;
+    public Supplier<Boolean> launchWhenFail;
 
-    public Lang lang = Lang.English;
-    public String launcherTitle = "";
-    public String updateMessage = "";
-    public InputStream launcherLogo = getClass().getResourceAsStream("/image/download.png");
-    public Supplier<Boolean> canUpdateNow = () -> true;
-    public Supplier<Boolean> launchWhenCannotUpdate = () -> false;
-    public Supplier<Boolean> launchWhenFail = () -> false;
-
-    public Options(String remoteRepositoryUrl, String downloadPath, String... launchCommand) {
-        this.remoteRepositoryUrl = remoteRepositoryUrl;
-        this.downloadPath = downloadPath;
-        this.launchCommand = launchCommand;
-        validate();
-    }
-
-    private void validate() {
+    public void validate() {
         if (noe(remoteRepositoryUrl))
-            throw new RuntimeException("Please configure 'remoteRepository' Updater4j option.");
+            fail("remoteRepository");
 
         if (noe(downloadPath))
-            throw new RuntimeException("Please configure 'downloadPath' Updater4j option.");
+            fail("downloadPath");
 
-        if (launchCommand.length == 0)
-            throw new RuntimeException("Please configure 'launchCommand' Updater4j option.");
+        if (launchCommand == null || launchCommand.length == 0)
+            fail("launchCommand");
+
+        if (lang == null)
+            fail("lang");
+
+        if (updateConfirmation == null)
+            fail("updateConfirmation");
+
+        if (launchWhenCannotUpdate == null)
+            fail("launchWhenCannotUpdate");
+
+        if (launchWhenFail == null)
+            fail("launchWhenFail");
+    }
+
+    private void fail(String field) {
+        throw new RuntimeException(String.format("Please configure '%s' Updater4j option.", field));
     }
 
     private static boolean noe(String value) {
         return value == null || value.isEmpty();
     }
+
+
 
 
 

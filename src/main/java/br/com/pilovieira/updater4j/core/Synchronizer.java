@@ -11,7 +11,7 @@ import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_FILE_NAME;
 import static br.com.pilovieira.updater4j.checksum.Checksum.CHECKSUM_SPLITTER;
 import static br.com.pilovieira.updater4j.core.FileWorker.BACKUP_EXT;
 import static br.com.pilovieira.updater4j.core.FileWorker.UPDATE_EXT;
-import static br.com.pilovieira.updater4j.util.Lang.msg;
+import static br.com.pilovieira.updater4j.Lang.msg;
 
 class Synchronizer {
 

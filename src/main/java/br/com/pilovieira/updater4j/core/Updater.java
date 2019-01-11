@@ -2,7 +2,7 @@ package br.com.pilovieira.updater4j.core;
 
 import br.com.pilovieira.updater4j.Options;
 
-import static br.com.pilovieira.updater4j.util.Lang.msg;
+import static br.com.pilovieira.updater4j.Lang.msg;
 
 public class Updater implements Runnable {
 
@@ -37,7 +37,7 @@ public class Updater implements Runnable {
     }
 
     private void update() {
-        if (options.canUpdateNow.get()) {
+        if (options.updateConfirmation.get()) {
             callback.onStart();
             new Synchronizer(options, new Synchronizer.Callback() {
                 @Override
