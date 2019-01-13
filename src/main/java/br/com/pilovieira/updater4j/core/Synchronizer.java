@@ -17,6 +17,7 @@ import static br.com.pilovieira.updater4j.core.FileWorker.UPDATE_EXT;
 class Synchronizer {
 
     private FileWorker worker;
+    private Checksum checksum;
     private Options options;
     private final File root;
     private Callback callback;
@@ -27,26 +28,23 @@ class Synchronizer {
     private List<File> toClean;
 
     public Synchronizer(Options options, Callback callback) {
-        this.worker = new FileWorker();
+        this(new FileWorker(), new Checksum(), options, new File(options.downloadPath), callback);
+    }
+
+    Synchronizer(FileWorker worker, Checksum checksum, Options options, File root, Callback callback) {
+        this.worker = worker;
+        this.checksum = checksum;
         this.options = options;
-        this.root = new File(options.downloadPath);
+        this.root = root;
         this.callback = callback;
-
-        if (root.exists() && !root.isDirectory())
-            throw new RuntimeException(msg("downloadPathMustBeDirectory"));
-
-        if (!root.exists()) {
-            boolean mkdirs = root.mkdirs();
-            if (!mkdirs)
-                throw new RuntimeException(msg("failedCreatingDirectories"));
-        }
-
         this.remoteRepo = options.remoteRepositoryUrl;
         this.toDelete = new ArrayList<>();
         this.toClean = new ArrayList<>();
     }
 
-    public void load() {
+    public void sync() {
+        prepareRoot();
+
         allRemote = loadRemoteChecksums();
         onlyRemote = new HashMap<>(allRemote);
 
@@ -56,6 +54,17 @@ class Synchronizer {
             rollback();
             if (!options.launchWhenFail.get())
                 throw ex;
+        }
+    }
+
+    private void prepareRoot() {
+        if (root.exists() && !root.isDirectory())
+            throw new RuntimeException(msg("downloadPathMustBeDirectory"));
+
+        if (!root.exists()) {
+            boolean mkdirs = root.mkdirs();
+            if (!mkdirs)
+                throw new RuntimeException(msg("failedCreatingDirectories"));
         }
     }
 
@@ -81,7 +90,7 @@ class Synchronizer {
         AtomicInteger totalForDownload = new AtomicInteger(onlyRemote.size());
 
         onlyRemote.keySet().forEach(s -> {
-            File file = new File(root, s);
+            File file = new File(root.getAbsolutePath(), s);
             callback.setMessage(msg("downloading") + " " + s);
             downloadAndValidate(file, s, onlyRemote.get(s));
             callback.setProgress(allRemote.size() - totalForDownload.decrementAndGet(), allRemote.size());
@@ -101,7 +110,7 @@ class Synchronizer {
 
         callback.setMessage(msg("verifiying") + " " + fileName);
 
-        String localChecksum = Checksum.buildChecksum(file);
+        String localChecksum = checksum.buildChecksum(file);
         String remoteChecksum = allRemote.get(fileName);
 
         if (remoteChecksum == null) {
@@ -124,7 +133,7 @@ class Synchronizer {
         File updatedFile = new File(updatedPath);
         toClean.add(updatedFile);
 
-        String localChecksum = Checksum.buildChecksum(updatedFile);
+        String localChecksum = checksum.buildChecksum(updatedFile);
         if (!remoteChecksum.equals(localChecksum))
             throw new RuntimeException(msg("downloadHasFailed"));
     }

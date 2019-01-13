@@ -16,8 +16,7 @@ public class Checksum {
 
     private static final String ALGORITHM = "SHA-512";
 
-
-    public static String buildChecksum(File file) {
+    public String buildChecksum(File file) {
         try {
             byte[] fileBytes = Files.readAllBytes(Paths.get(file.toURI()));
             MessageDigest alg = MessageDigest.getInstance(ALGORITHM);

@@ -41,7 +41,7 @@ public class ProcessorTest {
         InOrder inOrder = Mockito.inOrder(callback, synchronizer, launcher);
 
         inOrder.verify(callback).onStart();
-        inOrder.verify(synchronizer).load();
+        inOrder.verify(synchronizer).sync();
         inOrder.verify(launcher).launch(new String[]{"wget", "http://pilovieira.com.br/checksum/"});
         inOrder.verify(callback).onPostLaunch();
         inOrder.verify(callback, never()).onFail(any(Exception.class));
@@ -51,14 +51,14 @@ public class ProcessorTest {
     @Test
     public void callbackWhenFail() throws IOException {
         RuntimeException ex = new RuntimeException("Sync Failed");
-        doThrow(ex).when(synchronizer).load();
+        doThrow(ex).when(synchronizer).sync();
 
         subject.run();
 
         InOrder inOrder = Mockito.inOrder(callback, synchronizer, launcher);
 
         inOrder.verify(callback).onStart();
-        inOrder.verify(synchronizer).load();
+        inOrder.verify(synchronizer).sync();
         inOrder.verify(launcher, never()).launch(any());
         inOrder.verify(callback, never()).onPostLaunch();
         inOrder.verify(callback).onFail(ex);
@@ -68,7 +68,7 @@ public class ProcessorTest {
     @Test
     public void ignoreCallbackWhenFail() throws IOException {
         RuntimeException ex = new RuntimeException("Sync Failed");
-        doThrow(ex).when(synchronizer).load();
+        doThrow(ex).when(synchronizer).sync();
 
         subject.abort();
         subject.run();
@@ -76,7 +76,7 @@ public class ProcessorTest {
         InOrder inOrder = Mockito.inOrder(callback, synchronizer, launcher);
 
         inOrder.verify(callback).onStart();
-        inOrder.verify(synchronizer).load();
+        inOrder.verify(synchronizer).sync();
         inOrder.verify(launcher, never()).launch(any());
         inOrder.verify(callback, never()).onPostLaunch();
         inOrder.verify(callback, never()).onFail(ex);
@@ -93,7 +93,7 @@ public class ProcessorTest {
         InOrder inOrder = Mockito.inOrder(callback, synchronizer, launcher);
 
         inOrder.verify(callback, never()).onStart();
-        inOrder.verify(synchronizer, never()).load();
+        inOrder.verify(synchronizer, never()).sync();
         inOrder.verify(launcher, never()).launch(any());
         inOrder.verify(callback, never()).onPostLaunch();
         inOrder.verify(callback).onFail(argThat(new ArgumentMatcher<Exception>() {
@@ -117,7 +117,7 @@ public class ProcessorTest {
         InOrder inOrder = Mockito.inOrder(callback, synchronizer, launcher);
 
         inOrder.verify(callback, never()).onStart();
-        inOrder.verify(synchronizer, never()).load();
+        inOrder.verify(synchronizer, never()).sync();
         inOrder.verify(launcher).launch(new String[]{"wget", "http://pilovieira.com.br/checksum/"});
         inOrder.verify(callback).onPostLaunch();
         inOrder.verify(callback, never()).onFail(any(Exception.class));

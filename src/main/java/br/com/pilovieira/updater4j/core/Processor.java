@@ -59,7 +59,7 @@ public class Processor implements Runnable {
     private void update() {
         if (options.updateConfirmation.get()) {
             callback.onStart();
-            synchronizer.load();
+            synchronizer.sync();
         } else if (!options.launchWhenCannotUpdate.get())
             throw new RuntimeException(msg("updateCannotBeExecutedNow"));
     }

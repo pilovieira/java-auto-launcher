@@ -22,9 +22,11 @@ public class ChecksumTest {
 
     @Mock private File file;
 
+    private Checksum subject;
+
     @Before
     public void setup() {
-        Lang.initialize(Lang.English);
+        subject = new Checksum();
     }
 
     @Test
@@ -32,7 +34,7 @@ public class ChecksumTest {
         when(file.toURI()).thenReturn(getSimpleTest());
         when(file.getAbsolutePath()).thenReturn("/home/pilovieira/checksum/simplefile.txt");
 
-        String generatedChecksum = Checksum.buildChecksum(file);
+        String generatedChecksum = subject.buildChecksum(file);
 
         Assert.assertEquals(SIMPLE_TEXT_CHECKSUM, generatedChecksum);
     }
