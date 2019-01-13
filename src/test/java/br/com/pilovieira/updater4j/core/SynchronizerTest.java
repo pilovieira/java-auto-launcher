@@ -3,7 +3,6 @@ package br.com.pilovieira.updater4j.core;
 import br.com.pilovieira.updater4j.Lang;
 import br.com.pilovieira.updater4j.Options;
 import br.com.pilovieira.updater4j.checksum.Checksum;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,13 +46,17 @@ public class SynchronizerTest {
     @Mock private File bkptext;
     @Mock private File updatedtext;
 
-
+    private FileMatcher simpleTextUpdated;
+    private FileMatcher anotherTextUpdated;
     private Options options;
 
     private Synchronizer subject;
 
     @Before
     public void setup() {
+        simpleTextUpdated = new FileMatcher("/home/pilo/updater4j/simpletext.txt.updated");
+        anotherTextUpdated = new FileMatcher("/home/pilo/updater4j/anothertext.txt.updated");
+
         options = new Options();
         options.remoteRepositoryUrl = "http://pilovieira.com.br/updater4j/";
         options.downloadPath = "/home/pilo/updater4j/";
@@ -188,7 +191,7 @@ public class SynchronizerTest {
         when(worker.download("http://pilovieira.com.br/updater4j/loader-checksum.txt")).thenReturn(REMOTE_CHECKSUM_TWO_FILES);
         when(checksum.buildChecksum(simpletext)).thenReturn("break checksum");
         when(checksum.buildChecksum(anothertext)).thenReturn(ANOTHER_TEXT_CHECKSUM);
-        when(checksum.buildChecksum(argThat(new FileMatcher("/home/pilo/updater4j/simpletext.txt.updated")))).thenReturn(SIMPLE_TEXT_CHECKSUM);
+        when(checksum.buildChecksum(argThat(simpleTextUpdated))).thenReturn(SIMPLE_TEXT_CHECKSUM);
 
         subject.sync();
 
@@ -199,7 +202,7 @@ public class SynchronizerTest {
         io.verify(checksum).buildChecksum(simpletext);
         io.verify(callback).setMessage("Downloading simpletext.txt");
         io.verify(worker).download("http://pilovieira.com.br/updater4j/simpletext.txt", "/home/pilo/updater4j/simpletext.txt.updated");
-        io.verify(checksum).buildChecksum(argThat(new FileMatcher("/home/pilo/updater4j/simpletext.txt.updated")));
+        io.verify(checksum).buildChecksum(argThat(simpleTextUpdated));
         io.verify(callback).setProgress(1, 2);
 
         io.verify(callback).setMessage("Verifiying anothertext.txt");
@@ -207,7 +210,7 @@ public class SynchronizerTest {
         io.verify(callback).setProgress(2, 2);
 
         io.verify(worker).addExtension(simpletext, ".bkp");
-        io.verify(worker).removeExtension(argThat(new FileMatcher("/home/pilo/updater4j/simpletext.txt.updated")), eq(".updated"));
+        io.verify(worker).removeExtension(argThat(simpleTextUpdated), eq(".updated"));
         io.verify(worker).delete(argThat(new FileMatcher("/home/pilo/updater4j/simpletext.txt.bkp")), eq(false));
     }
 
@@ -218,7 +221,7 @@ public class SynchronizerTest {
         when(worker.download("http://pilovieira.com.br/updater4j/loader-checksum.txt")).thenReturn(REMOTE_CHECKSUM_TWO_FILES);
         when(checksum.buildChecksum(simpletext)).thenReturn("break checksum");
         when(checksum.buildChecksum(anothertext)).thenReturn(ANOTHER_TEXT_CHECKSUM);
-        when(checksum.buildChecksum(argThat(new FileMatcher("/home/pilo/updater4j/simpletext.txt.updated")))).thenReturn("download error");
+        when(checksum.buildChecksum(argThat(simpleTextUpdated))).thenReturn("download error");
 
         subject.sync();
 
@@ -229,11 +232,11 @@ public class SynchronizerTest {
         io.verify(checksum).buildChecksum(simpletext);
         io.verify(callback).setMessage("Downloading simpletext.txt");
         io.verify(worker).download("http://pilovieira.com.br/updater4j/simpletext.txt", "/home/pilo/updater4j/simpletext.txt.updated");
-        io.verify(checksum).buildChecksum(argThat(new FileMatcher("/home/pilo/updater4j/simpletext.txt.updated")));
+        io.verify(checksum).buildChecksum(argThat(simpleTextUpdated));
 
         //rollback
         io.verify(worker).removeExtension(simpletext, ".bkp");
-        io.verify(worker).delete(argThat(new FileMatcher("/home/pilo/updater4j/simpletext.txt.updated")), eq(true));
+        io.verify(worker).delete(argThat(simpleTextUpdated), eq(true));
     }
 
     @Test
@@ -242,7 +245,7 @@ public class SynchronizerTest {
 
         when(worker.download("http://pilovieira.com.br/updater4j/loader-checksum.txt")).thenReturn(REMOTE_CHECKSUM_TWO_FILES);
         when(checksum.buildChecksum(simpletext)).thenReturn("break checksum");
-        when(checksum.buildChecksum(argThat(new FileMatcher("/home/pilo/updater4j/simpletext.txt.updated")))).thenReturn("download error");
+        when(checksum.buildChecksum(argThat(simpleTextUpdated))).thenReturn("download error");
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage("Download has failed. Try again later.");
@@ -256,7 +259,7 @@ public class SynchronizerTest {
 
         when(worker.download("http://pilovieira.com.br/updater4j/loader-checksum.txt")).thenReturn(REMOTE_CHECKSUM_TWO_FILES);
         when(checksum.buildChecksum(simpletext)).thenReturn(SIMPLE_TEXT_CHECKSUM);
-        when(checksum.buildChecksum(argThat(new FileMatcher("/home/pilo/updater4j/anothertext.txt.updated")))).thenReturn(ANOTHER_TEXT_CHECKSUM);
+        when(checksum.buildChecksum(argThat(anotherTextUpdated))).thenReturn(ANOTHER_TEXT_CHECKSUM);
 
         subject.sync();
 
@@ -277,7 +280,7 @@ public class SynchronizerTest {
         }));
         io.verify(callback).setProgress(2, 2);
 
-        io.verify(worker).removeExtension(argThat(new FileMatcher("/home/pilo/updater4j/anothertext.txt.updated")), eq(".updated"));
+        io.verify(worker).removeExtension(argThat(anotherTextUpdated), eq(".updated"));
     }
 
     private String normalizePath(String path) {
