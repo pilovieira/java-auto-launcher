@@ -10,7 +10,6 @@
 	<packaging>pom</packaging>
 
     <url>https://github.com/pilovieira/updater4j</url>
-    <description>updater4j is a tool for manage updates of java programs.</description>
 	
 	<modules>
 		<module>updater4j-core</module>

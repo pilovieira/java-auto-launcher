@@ -11,7 +11,7 @@ public class Updater4j {
         options = new Options();
         options.lang = Lang.English;
         options.logo = getClass().getResourceAsStream("/image/download.png");
-        options.updateConfirmation = () -> true;
+        options.canUpdateNow = () -> true;
         options.launchWhenCannotUpdate = () -> false;
         options.launchWhenFail = () -> false;
     }
@@ -46,8 +46,8 @@ public class Updater4j {
         return this;
     }
 
-    public Updater4j setUpdateConfirmation(Supplier<Boolean> supplier) {
-        options.updateConfirmation = supplier;
+    public Updater4j setCanUpdateNow(Supplier<Boolean> supplier) {
+        options.canUpdateNow = supplier;
         return this;
     }
 

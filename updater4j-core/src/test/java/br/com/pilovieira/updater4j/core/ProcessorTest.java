@@ -28,7 +28,7 @@ public class ProcessorTest {
     @Before
     public void setup() {
         options = new Options();
-        options.updateConfirmation = () -> true;
+        options.canUpdateNow = () -> true;
         options.launchCommand = new String[]{"wget", "http://pilovieira.com.br/checksum/"};
 
         subject = new Processor(options, callback, synchronizer, launcher);
@@ -85,7 +85,7 @@ public class ProcessorTest {
 
     @Test
     public void cantUpdateDontLaunch() throws IOException {
-        options.updateConfirmation = () -> false;
+        options.canUpdateNow = () -> false;
         options.launchWhenCannotUpdate = () -> false;
 
         subject.run();
@@ -109,7 +109,7 @@ public class ProcessorTest {
 
     @Test
     public void cantUpdateButLaunch() throws IOException {
-        options.updateConfirmation = () -> false;
+        options.canUpdateNow = () -> false;
         options.launchWhenCannotUpdate = () -> true;
 
         subject.run();

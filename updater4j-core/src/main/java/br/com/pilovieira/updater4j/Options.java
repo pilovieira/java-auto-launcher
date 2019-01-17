@@ -11,7 +11,7 @@ public class Options {
     public Lang lang;
     public String message;
     public InputStream logo;
-    public Supplier<Boolean> updateConfirmation;
+    public Supplier<Boolean> canUpdateNow;
     public Supplier<Boolean> launchWhenCannotUpdate;
     public Supplier<Boolean> launchWhenFail;
 
@@ -28,8 +28,8 @@ public class Options {
         if (lang == null)
             fail("lang");
 
-        if (updateConfirmation == null)
-            fail("updateConfirmation");
+        if (canUpdateNow == null)
+            fail("canUpdateNow");
 
         if (launchWhenCannotUpdate == null)
             fail("launchWhenCannotUpdate");

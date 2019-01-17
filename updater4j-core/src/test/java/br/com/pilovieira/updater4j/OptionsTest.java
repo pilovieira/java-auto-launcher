@@ -22,7 +22,7 @@ public class OptionsTest {
         subject.downloadPath = "/home/pilo/updater4j/";
         subject.launchCommand = new String[]{"java -jar fakejar.jar"};
         subject.lang = Lang.English;
-        subject.updateConfirmation = () -> true;
+        subject.canUpdateNow = () -> true;
         subject.launchWhenCannotUpdate = () -> false;
         subject.launchWhenFail = () -> false;
     }
@@ -78,11 +78,11 @@ public class OptionsTest {
     }
 
     @Test
-    public void updateConfirmationNull() {
+    public void canUpdateNowNull() {
         thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Please configure 'updateConfirmation' Updater4j option.");
+        thrown.expectMessage("Please configure 'canUpdateNow' Updater4j option.");
 
-        subject.updateConfirmation = null;
+        subject.canUpdateNow = null;
         subject.validate();
     }
 

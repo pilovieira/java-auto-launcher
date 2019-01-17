@@ -62,7 +62,7 @@ public class SynchronizerTest {
         options.downloadPath = "/home/pilo/updater4j/";
         options.launchCommand = new String[]{"java -jar fakejar.jar"};
         options.lang = Lang.English;
-        options.updateConfirmation = () -> true;
+        options.canUpdateNow = () -> true;
         options.launchWhenCannotUpdate = () -> false;
         options.launchWhenFail = () -> false;
 
