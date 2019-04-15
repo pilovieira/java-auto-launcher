@@ -40,18 +40,17 @@ You must to create a module or project that calls the Updater4j class.
 In the Updater4j class you must specify the settings of your launcher:
 
 Required configs:
-- **remoteRepositoryUrl** (The artifact repository for your system. This repository must be public and must contain all the artifacts of your system, it should also contain file "loader-checksum.txt" which is generated using a plugin described below.)
-- **downloadPath** (The path where the system files will be downloaded.)
-- **launchCommand** (The command that will be executed after the artifacts are downloaded.)
+- **remoteRepositoryUrl** (The artifact repository for your system. This repository must be public and must contain all the artifacts of your system, it should also contain file "loader-checksum.txt" which is generated using a plugin described below)
+- **downloadPath** (The path where the system files will be downloaded)
+- **launchCommand** (The command that will be executed after the artifacts are downloaded)
 
 Optional configs:
-- **lang** (The language of updater4j - Default: English.)
-- **message** (Message that appears when downloads are running - Default: "Updating...".)
-- **logo** (The inputstream of the image that appears when downloads are running - Default: "Orange donwload image" - You can put null here for no image.)
-- **canUpdateNow** (Confirmation for update. This supplier runs every time when the updater4j is started. Implement when your system needs initial verification for updates. - Default: return true.)
-- **launchWhenCannotUpdate** (Supplier to execute the launch command even when the validation on "canUpdateNow" fails. - Default: return false.)
-- **launchWhenFail** (Supplier to execute the launch command even when the update session fails. Note: When the upgrade fails, a rollback of the artifacts will be executed, returning to the original state. - Default: return false.)
-
+- **lang** (The language of updater4j - Default: English)
+- **message** (Message that appears when downloads are running - Default: "Updating...")
+- **logo** (The inputstream of the image that appears when downloads are running - Default: "Orange download image" - You can put null here for no image)
+- **canUpdateNow** (Confirmation for update. This supplier runs every time when the updater4j is started. Implement when your system needs initial verification for updates. - Default: return true)
+- **launchWhenCannotUpdate** (Supplier to execute the launch command even when the validation on "canUpdateNow" fails. - Default: return false)
+- **launchWhenFail** (Supplier to execute the launch command even when the update session fails. Note: When the upgrade fails, a rollback of the artifacts will be executed, returning to the original state. - Default: return false)
 
 ##### Updater4j example
 
