@@ -1,5 +1,7 @@
 package br.com.pilovieira.updater4j;
 
+import br.com.pilovieira.updater4j.ui.UpdaterUi;
+
 import java.io.InputStream;
 import java.util.function.Supplier;
 
@@ -14,6 +16,7 @@ public class Updater4j {
         options.canUpdateNow = () -> true;
         options.launchWhenCannotUpdate = () -> false;
         options.launchWhenFail = () -> false;
+        options.gui = false;
     }
 
     public Updater4j setRemoteRepositoryUrl(String remoteRepositoryUrl) {
@@ -61,10 +64,15 @@ public class Updater4j {
         return this;
     }
 
+    public Updater4j setGui(boolean gui) {
+        options.gui = gui;
+        return this;
+    }
+
     public void start() {
-       options.validate();
+        options.validate();
         Lang.initialize(options.lang);
-        new Frame(options);
+        UpdaterUi.produce(options).startUpdate();
     }
 
 }

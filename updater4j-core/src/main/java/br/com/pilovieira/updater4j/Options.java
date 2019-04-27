@@ -14,6 +14,7 @@ public class Options {
     public Supplier<Boolean> canUpdateNow;
     public Supplier<Boolean> launchWhenCannotUpdate;
     public Supplier<Boolean> launchWhenFail;
+    public boolean gui;
 
     public void validate() {
         if (noe(remoteRepositoryUrl))
