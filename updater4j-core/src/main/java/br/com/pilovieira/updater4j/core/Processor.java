@@ -43,6 +43,7 @@ public class Processor implements Runnable {
     public void run() {
         try {
             update();
+            options.afterUpdateCallback.run();
             launcher.launch(options.launchCommand);
             callback.onPostLaunch();
         } catch (Exception ex) {

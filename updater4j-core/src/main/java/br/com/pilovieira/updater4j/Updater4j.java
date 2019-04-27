@@ -14,6 +14,7 @@ public class Updater4j {
         options.canUpdateNow = () -> true;
         options.launchWhenCannotUpdate = () -> false;
         options.launchWhenFail = () -> false;
+        options.afterUpdateCallback = () -> {};
     }
 
     public Updater4j setRemoteRepositoryUrl(String remoteRepositoryUrl) {
@@ -58,6 +59,11 @@ public class Updater4j {
 
     public Updater4j setLaunchWhenFail(Supplier<Boolean> supplier) {
         options.launchWhenFail = supplier;
+        return this;
+    }
+
+    public Updater4j setAfterUpdateCallback(Runnable callback) {
+        options.afterUpdateCallback = callback;
         return this;
     }
 

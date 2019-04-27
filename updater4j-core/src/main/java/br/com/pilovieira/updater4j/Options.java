@@ -14,6 +14,7 @@ public class Options {
     public Supplier<Boolean> canUpdateNow;
     public Supplier<Boolean> launchWhenCannotUpdate;
     public Supplier<Boolean> launchWhenFail;
+    public Runnable afterUpdateCallback;
 
     public void validate() {
         if (noe(remoteRepositoryUrl))
@@ -36,6 +37,9 @@ public class Options {
 
         if (launchWhenFail == null)
             fail("launchWhenFail");
+
+        if (afterUpdateCallback == null)
+            fail("afterUpdateCallback");
     }
 
     private void fail(String field) {

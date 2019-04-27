@@ -51,6 +51,7 @@ Optional configs:
 - **canUpdateNow** (Confirmation for update. This supplier runs every time when the updater4j is started. Implement when your system needs initial verification for updates. - Default: return true)
 - **launchWhenCannotUpdate** (Supplier to execute the launch command even when the validation on "canUpdateNow" fails. - Default: return false)
 - **launchWhenFail** (Supplier to execute the launch command even when the update session fails. Note: When the upgrade fails, a rollback of the artifacts will be executed, returning to the original state. - Default: return false)
+- **afterUpdateCallback** (Runnable that will run after the updater has successfully completed. - Default: empty runnable)
 
 ##### Updater4j example
 

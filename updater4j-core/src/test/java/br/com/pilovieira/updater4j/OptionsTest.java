@@ -25,6 +25,7 @@ public class OptionsTest {
         subject.canUpdateNow = () -> true;
         subject.launchWhenCannotUpdate = () -> false;
         subject.launchWhenFail = () -> false;
+        subject.afterUpdateCallback = () -> {};
     }
 
     @Test

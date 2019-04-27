@@ -5,7 +5,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentMatcher;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
@@ -21,6 +24,7 @@ public class ProcessorTest {
     @Mock private Processor.Callback callback;
     @Mock private Synchronizer synchronizer;
     @Mock private Launcher launcher;
+    @Mock private Runnable afterUpdateCallback;
     private Options options;
 
     private Processor subject;
@@ -29,6 +33,7 @@ public class ProcessorTest {
     public void setup() {
         options = new Options();
         options.canUpdateNow = () -> true;
+        options.afterUpdateCallback = afterUpdateCallback;
         options.launchCommand = new String[]{"wget", "http://pilovieira.com.br/checksum/"};
 
         subject = new Processor(options, callback, synchronizer, launcher);
@@ -38,10 +43,11 @@ public class ProcessorTest {
     public void startUpdate() throws IOException {
         subject.run();
 
-        InOrder inOrder = Mockito.inOrder(callback, synchronizer, launcher);
+        InOrder inOrder = Mockito.inOrder(callback, synchronizer, afterUpdateCallback, launcher);
 
         inOrder.verify(callback).onStart();
         inOrder.verify(synchronizer).sync();
+        inOrder.verify(afterUpdateCallback).run();
         inOrder.verify(launcher).launch(new String[]{"wget", "http://pilovieira.com.br/checksum/"});
         inOrder.verify(callback).onPostLaunch();
         inOrder.verify(callback, never()).onFail(any(Exception.class));
@@ -55,10 +61,11 @@ public class ProcessorTest {
 
         subject.run();
 
-        InOrder inOrder = Mockito.inOrder(callback, synchronizer, launcher);
+        InOrder inOrder = Mockito.inOrder(callback, synchronizer, afterUpdateCallback, launcher);
 
         inOrder.verify(callback).onStart();
         inOrder.verify(synchronizer).sync();
+        inOrder.verify(afterUpdateCallback, never()).run();
         inOrder.verify(launcher, never()).launch(any());
         inOrder.verify(callback, never()).onPostLaunch();
         inOrder.verify(callback).onFail(ex);
@@ -73,10 +80,11 @@ public class ProcessorTest {
         subject.abort();
         subject.run();
 
-        InOrder inOrder = Mockito.inOrder(callback, synchronizer, launcher);
+        InOrder inOrder = Mockito.inOrder(callback, synchronizer, afterUpdateCallback, launcher);
 
         inOrder.verify(callback).onStart();
         inOrder.verify(synchronizer).sync();
+        inOrder.verify(afterUpdateCallback, never()).run();
         inOrder.verify(launcher, never()).launch(any());
         inOrder.verify(callback, never()).onPostLaunch();
         inOrder.verify(callback, never()).onFail(ex);
@@ -90,10 +98,11 @@ public class ProcessorTest {
 
         subject.run();
 
-        InOrder inOrder = Mockito.inOrder(callback, synchronizer, launcher);
+        InOrder inOrder = Mockito.inOrder(callback, synchronizer, afterUpdateCallback, launcher);
 
         inOrder.verify(callback, never()).onStart();
         inOrder.verify(synchronizer, never()).sync();
+        inOrder.verify(afterUpdateCallback, never()).run();
         inOrder.verify(launcher, never()).launch(any());
         inOrder.verify(callback, never()).onPostLaunch();
         inOrder.verify(callback).onFail(argThat(new ArgumentMatcher<Exception>() {
@@ -114,10 +123,11 @@ public class ProcessorTest {
 
         subject.run();
 
-        InOrder inOrder = Mockito.inOrder(callback, synchronizer, launcher);
+        InOrder inOrder = Mockito.inOrder(callback, synchronizer, afterUpdateCallback, launcher);
 
         inOrder.verify(callback, never()).onStart();
         inOrder.verify(synchronizer, never()).sync();
+        inOrder.verify(afterUpdateCallback).run();
         inOrder.verify(launcher).launch(new String[]{"wget", "http://pilovieira.com.br/checksum/"});
         inOrder.verify(callback).onPostLaunch();
         inOrder.verify(callback, never()).onFail(any(Exception.class));
