@@ -143,7 +143,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 * **Pilo Vieira** - *Initial work* - [GitHub](https://github.com/pilovieira) - [Website](http://pilovieira.com.br)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/pilovieira/updater4j/contributors) who participated in this project.
 
 ## License
 
