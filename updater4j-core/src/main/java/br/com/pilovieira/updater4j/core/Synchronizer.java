@@ -45,10 +45,9 @@ class Synchronizer {
     public void sync() {
         prepareRoot();
 
-        allRemote = loadRemoteChecksums();
-        onlyRemote = new HashMap<>(allRemote);
-
         try {
+            allRemote = loadRemoteChecksums();
+            onlyRemote = new HashMap<>(allRemote);
             update(root);
         } catch (Exception ex) {
             rollback();

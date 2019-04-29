@@ -13,12 +13,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SynchronizerTest {
@@ -149,6 +145,16 @@ public class SynchronizerTest {
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage("Failed creating directories.");
+
+        subject.sync();
+    }
+
+    @Test
+    public void failDownloadChecksumFile() {
+        when(worker.download("http://pilovieira.com.br/updater4j/loader-checksum.txt")).thenThrow(new RuntimeException("File download failed."));
+
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage("File download failed.");
 
         subject.sync();
     }
